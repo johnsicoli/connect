@@ -4,19 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Connect · Bookmarks</title>
-<link rel="stylesheet" href="/app.css">
+<link rel="stylesheet" href="app.css">
 </head>
 <body>
 <header class="top">
   <div class="brand">
-    <p class="eyebrow">Connect</p>
+    <p class="eyebrow">Connect · Raindrop</p>
     <h1>Bookmarks</h1>
+    <p class="offline">This page is a file on this Mac. Browsing does not use a server.</p>
   </div>
   <form class="search" role="search">
     <label class="sr" for="q">Search bookmarks</label>
     <input id="q" type="search" placeholder="Search title, link, tag, or note" autocomplete="off">
   </form>
 </header>
+<section class="sync" id="sync">
+  <button type="button" id="sync-button">Sync newest bookmarks</button>
+  <p id="sync-status" class="sync-status">The sync server is off until you start it.</p>
+  <div class="instructions">
+    <p>Open Terminal and paste these two commands. Leave that window open. Then click the button again. When it finishes, reload this file.</p>
+    <pre>cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
+python3 server.py</pre>
+    <p>Stop the server later by clicking that Terminal and pressing Control and C together.</p>
+  </div>
+</section>
 <div class="layout">
   <aside>
     <p id="stats" class="stats">Loading…</p>
@@ -30,6 +41,7 @@
     <p id="empty" class="empty" hidden>Nothing matches.</p>
   </main>
 </div>
-<script src="/app.js"></script>
+<script src="bookmarks.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

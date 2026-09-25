@@ -28,7 +28,14 @@ CREATE TABLE IF NOT EXISTS bookmarks (
     raindrop_id INTEGER UNIQUE,
     source TEXT NOT NULL DEFAULT 'export',
     domain TEXT NOT NULL DEFAULT '',
-    type TEXT NOT NULL DEFAULT ''
+    type TEXT NOT NULL DEFAULT '',
+    og_title TEXT NOT NULL DEFAULT '',
+    og_description TEXT NOT NULL DEFAULT '',
+    og_image TEXT NOT NULL DEFAULT '',
+    hero_source TEXT NOT NULL DEFAULT '',
+    hero_file TEXT NOT NULL DEFAULT '',
+    og_image_file TEXT NOT NULL DEFAULT '',
+    og_checked INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS bookmarks_created ON bookmarks(created_at);

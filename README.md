@@ -44,13 +44,13 @@ The export had 566 bookmarks, all in Unsorted. One URL was saved twice, so the d
 
 ### The Raindrop port
 
-The modified website uses **4350**. The library uses **4351**. Nothing else in Connect listens on a port. Both are inside one reserved block.
+Browsing uses no port. The optional sync server uses **4351** and stays off until you start it.
 
 Add this row to the ports documentation:
 
 | Project / service | Default | Reserved range | Purpose | Owner / notes |
 | --- | ---: | --- | --- | --- |
-| Connect | `4350` | `4350-4359` | Local bookmark library. Later saved-post tools in this repo use the next free port in this block. | `4350` is the modified Raindrop website. `4351` is the library in the same folder. Do not bind outside `4350-4359`. `4360-4399` stays unallocated. |
+| Connect | `4351` | `4350-4359` | Local bookmark library. Later saved-post tools in this repo use the next free port in this block. | Browsing is a local file and uses no port. `4351` is the optional sync server, off by default. Do not bind outside `4350-4359`. `4360-4399` stays unallocated. |
 
 ### Install the modified Raindrop website
 
@@ -88,57 +88,9 @@ npm run build
 
 Wait until it says the build compiled. The files land in `dist/web/prod` inside that same folder.
 
-### Start the modified Raindrop website
+### Save bookmarks and images onto this Mac
 
-The build must already be done. Leave the terminal open. This uses port 4350.
-
-#### Go to the website folder
-
-```sh
-cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
-```
-
-#### Turn the website on
-
-```sh
-npm start
-```
-
-Wait until it prints `Raindrop website at http://127.0.0.1:4350`. Then it sits there. Sitting there means it is on. Sign-in goes through this address to raindrop.io.
-
-#### Open the website
-
-In Chrome or Safari, go to http://127.0.0.1:4350 and sign in with the Raindrop account.
-
-### Stop the modified Raindrop website
-
-#### Stop it while the terminal is still open
-
-Click the terminal where `npm start` is running. Press Control and C together.
-
-#### Stop it if you already closed the terminal
-
-```sh
-lsof -nP -iTCP:4350 -sTCP:LISTEN
-```
-
-If a line appears, the number in the second column is the PID. Then run this, with that number instead of `PID`:
-
-```sh
-kill PID
-```
-
-#### Check that the website is off
-
-```sh
-lsof -nP -iTCP:4350 -sTCP:LISTEN
-```
-
-No lines means it is stopped.
-
-### Start the Raindrop library
-
-The library is the other program in `raindrop-website-app`. It shows the local database. It uses port 4351. Leave the terminal open. It does not need npm.
+Do this once, and again after a sync if you ran the download from Terminal instead of the button. It writes `static/bookmarks.js` and `static/media/`. Those files stay on this Mac and are not in git.
 
 #### Go to the website folder
 
@@ -146,19 +98,45 @@ The library is the other program in `raindrop-website-app`. It shows the local d
 cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 ```
 
-#### Turn the library on
+#### Download Open Graph text and hero images, then write the page data
+
+```sh
+python3 build_offline.py
+```
+
+Wait until it prints a line with `bookmarks` and `heroes`. It can take a while. It stops by itself.
+
+### Open the bookmark page
+
+No server. No `npm start`.
+
+#### Open the file
+
+```sh
+open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/static/index.html
+```
+
+Chrome or Safari opens the file from this Mac. Search, tags, notes, and the saved hero images work with the server off.
+
+### Start the sync server
+
+Leave this off until you want new bookmarks. It uses port 4351. The page also shows these commands.
+
+#### Go to the website folder
+
+```sh
+cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
+```
+
+#### Turn the sync server on
 
 ```sh
 python3 server.py
 ```
 
-Wait until it prints `Connect library at http://127.0.0.1:4351`. The first time the database is empty, this reads the HTML export.
+Wait until it prints `Sync server at http://127.0.0.1:4351`. Leave the window open. Go back to the bookmark file and click **Sync newest bookmarks**. When the page says the sync finished, reload the file.
 
-#### Open the library
-
-In Chrome or Safari, go to http://127.0.0.1:4351
-
-### Stop the Raindrop library
+### Stop the sync server
 
 #### Stop it while the terminal is still open
 
@@ -176,13 +154,13 @@ If a line appears, the number in the second column is the PID. Then run this, wi
 kill PID
 ```
 
-#### Check that the library is off
+#### Check that the sync server is off
 
 ```sh
 lsof -nP -iTCP:4351 -sTCP:LISTEN
 ```
 
-No lines means it is stopped.
+No lines means it is stopped. The bookmark file still opens.
 
 ### Download new Raindrop bookmarks
 
@@ -202,7 +180,9 @@ cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-api
 python3 sync_raindrop.py
 ```
 
-Wait until it prints a line with `added` and the prompt comes back. That means it stopped by itself. Reload http://127.0.0.1:4351 if the library is on.
+Wait until it prints a line with `added` and the prompt comes back. That means it stopped by itself. This command does not download images. After it, run `python3 build_offline.py` in `raindrop-website-app`, then reload the bookmark file.
+
+The button on the bookmark page does both steps when the sync server is on.
 
 ### Build the Raindrop Chrome extension
 

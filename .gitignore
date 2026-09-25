@@ -10,3 +10,5 @@ raindrop-bookmark-app/raindrop-manual-exports/*.html
 raindrop-bookmark-app/raindrop-website-app-data/*
 !raindrop-bookmark-app/raindrop-website-app-data/.gitkeep
 !raindrop-bookmark-app/raindrop-website-app-data/README.md
+raindrop-bookmark-app/raindrop-website-app/static/bookmarks.js
+raindrop-bookmark-app/raindrop-website-app/static/media/

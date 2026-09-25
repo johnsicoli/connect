@@ -1,102 +1,68 @@
-"""Local bookmark library. Serves http://127.0.0.1:4351
+"""Optional sync server. Off unless you start it.
 
-The modified Raindrop website uses 4350. This library uses 4351.
-Both are inside the Connect block 4350-4359.
+Browsing does not use this. Open static/index.html as a file.
+This listens on 127.0.0.1:4351 only so the Sync button on that page can
+download new Raindrop bookmarks and refresh the local files.
 """
 
 import json
+import sys
+import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
 
-from db import DB_PATH, EXPORT_PATH, connect, get_meta
-from import_html import import_export
+from build_offline import build
 
-ROOT = Path(__file__).resolve().parent
-STATIC = ROOT / "static"
+API_DIR = Path(__file__).resolve().parent.parent / "raindrop-api"
+sys.path.insert(0, str(API_DIR))
+
 HOST = "127.0.0.1"
 PORT = 4351
-
-
-def row_to_item(row):
-    return {
-        "id": row["id"],
-        "url": row["url"],
-        "title": row["title"],
-        "excerpt": row["excerpt"],
-        "note": row["note"],
-        "cover": row["cover"],
-        "tags": json.loads(row["tags"] or "[]"),
-        "highlights": json.loads(row["highlights"] or "[]"),
-        "important": bool(row["important"]),
-        "collection": row["collection"],
-        "created_at": row["created_at"],
-        "updated_at": row["updated_at"],
-        "raindrop_id": row["raindrop_id"],
-        "source": row["source"],
-        "domain": row["domain"],
-        "type": row["type"],
-    }
-
-
-def ensure_seeded():
-    db = connect()
-    count = db.execute("SELECT COUNT(*) AS n FROM bookmarks").fetchone()["n"]
-    if count == 0 and EXPORT_PATH.exists():
-        import_export(EXPORT_PATH, db)
-    db.close()
 
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         print("%s %s" % (self.address_string(), fmt % args))
 
-    def do_GET(self):
-        path = urlparse(self.path).path
-        if path == "/api/library":
-            return self.send_library()
-        if path == "/":
-            path = "/index.html"
-        file_path = (STATIC / path.lstrip("/")).resolve()
-        if not str(file_path).startswith(str(STATIC)) or not file_path.is_file():
-            self.send_error(404)
-            return
-        kind = {
-            ".html": "text/html; charset=utf-8",
-            ".css": "text/css; charset=utf-8",
-            ".js": "text/javascript; charset=utf-8",
-        }.get(file_path.suffix, "application/octet-stream")
-        body = file_path.read_bytes()
-        self.send_response(200)
-        self.send_header("Content-Type", kind)
+    def end_ok(self, code, payload):
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         self.wfile.write(body)
 
-    def send_library(self):
-        db = connect()
-        rows = db.execute(
-            "SELECT * FROM bookmarks ORDER BY created_at DESC, id DESC"
-        ).fetchall()
-        payload = {
-            "bookmarks": [row_to_item(row) for row in rows],
-            "sync_after": get_meta(db, "sync_after", ""),
-            "last_sync": get_meta(db, "last_sync", ""),
-            "database": str(DB_PATH),
-        }
-        db.close()
-        body = json.dumps(payload).encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+    def do_OPTIONS(self):
+        self.end_ok(204, {})
+
+    def do_GET(self):
+        if self.path.split("?")[0] == "/health":
+            self.end_ok(200, {"ok": True})
+            return
+        self.end_ok(404, {"ok": False})
+
+    def do_POST(self):
+        if self.path.split("?")[0] != "/sync":
+            self.end_ok(404, {"ok": False})
+            return
+        try:
+            from sync_raindrop import sync
+            downloaded = sync()
+            library = build()
+            self.end_ok(200, {"ok": True, "downloaded": downloaded, "library": library})
+        except Exception as error:
+            traceback.print_exc()
+            self.end_ok(500, {"ok": False, "error": str(error)})
 
 
 def main():
-    ensure_seeded()
     server = ThreadingHTTPServer((HOST, PORT), Handler)
-    print(f"Connect library at http://{HOST}:{PORT}")
+    print(f"Sync server at http://{HOST}:{PORT}")
+    print("Leave this running, then click Sync on the bookmark page.")
+    print("Press Control-C to stop it.")
     server.serve_forever()
 
 

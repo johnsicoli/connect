@@ -103,9 +103,34 @@ aside { position: sticky; top: 112px; align-self: start; }
 
 .result-count { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
 .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.offline { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+.sync {
+  margin: 16px 32px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+}
+.sync button {
+  border: 0;
+  background: var(--teal);
+  color: white;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+.sync button:disabled { opacity: 0.6; cursor: wait; }
+.sync-status { margin: 8px 0 0; }
+.instructions pre {
+  background: #f3efe6;
+  padding: 10px 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
 .card {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-columns: 168px minmax(0, 1fr);
   gap: 14px;
   background: var(--card);
   border: 1px solid var(--line);
@@ -115,8 +140,8 @@ aside { position: sticky; top: 112px; align-self: start; }
 }
 .card.no-cover { grid-template-columns: 1fr; }
 .cover {
-  width: 72px;
-  height: 72px;
+  width: 168px;
+  height: 112px;
   object-fit: cover;
   border-radius: 8px;
   background: var(--line);
@@ -157,6 +182,7 @@ summary { cursor: pointer; color: var(--muted); font-size: 13px; }
   aside { position: static; }
   .tags { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
   .tag, .clear { flex: 0 0 auto; }
-  .card { grid-template-columns: 56px minmax(0, 1fr); }
-  .cover { width: 56px; height: 56px; }
+  .sync { margin: 12px 16px 0; }
+  .card { grid-template-columns: 96px minmax(0, 1fr); }
+  .cover { width: 96px; height: 72px; }
 }

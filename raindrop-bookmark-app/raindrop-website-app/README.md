@@ -1,36 +1,18 @@
 # Modified Raindrop clone and library
 
-This folder holds two programs.
+This folder holds two programs for the Raindrop source in Connect.
 
-The modified clone is Raindrop's website, changed so it runs on this Mac. Its files are `src/`, `package.json`, `connect-server.js`, and `dist/`. It opens at http://127.0.0.1:4350.
+The library page is `static/index.html`. Open that file in a browser. It is rich JavaScript and it does not need a web server. Search, tags, notes, Open Graph text, and hero images come from files on this Mac.
 
-The library is the local bookmark viewer. Its files are `server.py`, `db.py`, `import_html.py`, and `static/`. It opens at http://127.0.0.1:4351. The database is not in this folder. It is in `../raindrop-website-app-data`.
+The modified Raindrop website clone is `src/`, `package.json`, and `connect-server.js`. You do not need it to browse the saved bookmarks.
 
-This folder is the Raindrop piece of Connect. Connect is the application for connecting to websites and sources. The full account of Connect and of Raindrop is in the root [README](../../README.md).
+The database is in `../raindrop-website-app-data`. Saved images are in `static/media/`. The page data is `static/bookmarks.js`. Images and `bookmarks.js` stay on this Mac and are not in git.
 
-Raindrop's original short build list is in `UPSTREAM-README.md`.
+The full account of Connect and of Raindrop is in the root [README](../../README.md).
 
-## Install the modified clone
+## Save bookmarks and images onto this Mac
 
-Do this once, or again after the dependencies change.
-
-### Go to this folder
-
-```sh
-cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
-```
-
-### Download the pieces the clone needs
-
-```sh
-npm ci
-```
-
-Wait until the prompt comes back. This creates `node_modules`. That folder stays on this Mac and is not in git.
-
-## Build the modified clone
-
-Do this before the first start, and again after the clone code changes.
+Do this once, and again after a Terminal download of new bookmarks.
 
 ### Go to this folder
 
@@ -38,17 +20,27 @@ Do this before the first start, and again after the clone code changes.
 cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 ```
 
-### Make the files the browser will open
+### Download Open Graph text and hero images, then write the page data
 
 ```sh
-npm run build
+python3 build_offline.py
 ```
 
-Wait until it says the build compiled. The files land in `dist/web/prod`.
+Wait until it prints a line with `bookmarks` and `heroes`. It stops by itself.
 
-## Start the modified clone
+## Open the bookmark page
 
-The build must already be done. Leave the terminal open. This uses port 4350.
+### Open the file
+
+```sh
+open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/static/index.html
+```
+
+No server is started. The page works while that Terminal is closed.
+
+## Start the sync server
+
+Only for the **Sync newest bookmarks** button. Leave it off the rest of the time. It uses port 4351. The page shows these commands too.
 
 ### Go to this folder
 
@@ -56,71 +48,19 @@ The build must already be done. Leave the terminal open. This uses port 4350.
 cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 ```
 
-### Turn the modified clone on
-
-```sh
-npm start
-```
-
-Wait until it prints `Raindrop website at http://127.0.0.1:4350`. Then it sits there. Sitting there means it is on.
-
-### Open the modified clone
-
-In Chrome or Safari, go to http://127.0.0.1:4350 and sign in. Sign-in goes through this address to raindrop.io.
-
-## Stop the modified clone
-
-### Stop it while this terminal is open
-
-Click the terminal where `npm start` is running. Press Control and C together. The prompt comes back. Port 4350 is free.
-
-### Stop it if the terminal is gone
-
-```sh
-lsof -nP -iTCP:4350 -sTCP:LISTEN
-```
-
-If a line is printed, the second column is the PID. Run this with that number instead of `PID`:
-
-```sh
-kill PID
-```
-
-### Check that the modified clone is off
-
-```sh
-lsof -nP -iTCP:4350 -sTCP:LISTEN
-```
-
-No output means it is off.
-
-## Start the library
-
-This is the local bookmark viewer. It does not need `npm`. Leave the terminal open. This uses port 4351.
-
-### Go to this folder
-
-```sh
-cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
-```
-
-### Turn the library on
+### Turn the sync server on
 
 ```sh
 python3 server.py
 ```
 
-Wait until it prints `Connect library at http://127.0.0.1:4351`. The first time the database is empty, this also reads the HTML export.
+Wait until it prints `Sync server at http://127.0.0.1:4351`. Leave the window open. Click the button on the bookmark page. When it says the sync finished, reload the file.
 
-### Open the library
-
-In Chrome or Safari, go to http://127.0.0.1:4351
-
-## Stop the library
+## Stop the sync server
 
 ### Stop it while this terminal is open
 
-Click the terminal where `python3 server.py` is running. Press Control and C together.
+Click this terminal. Press Control and C together.
 
 ### Stop it if the terminal is gone
 
@@ -134,17 +74,15 @@ If a line is printed, the second column is the PID. Run this with that number in
 kill PID
 ```
 
-### Check that the library is off
+### Check that it is off
 
 ```sh
 lsof -nP -iTCP:4351 -sTCP:LISTEN
 ```
 
-No output means it is off.
+No output means it is off. The bookmark file still opens.
 
-## Fill the library database from the HTML export
-
-Starting `python3 server.py` with an empty database does this for you. Use this command only if you want to load the export yourself.
+## Fill the database from the HTML export
 
 ### Go to this folder
 
@@ -158,4 +96,4 @@ cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 python3 import_html.py
 ```
 
-It prints how many bookmarks it read, then it stops. The database file is `../raindrop-website-app-data/bookmarks.sqlite`.
+It prints how many bookmarks it read, then it stops. Then run `python3 build_offline.py` so the page and images match the database.

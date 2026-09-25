@@ -85,12 +85,11 @@ function renderList() {
     const card = document.createElement("li")
     card.className = "card"
     const href = safeUrl(item.url)
-    const coverUrl = safeUrl(item.cover)
-    if (coverUrl) {
+    if (item.hero) {
       const img = document.createElement("img")
       img.className = "cover"
       img.alt = ""
-      img.src = coverUrl
+      img.src = item.hero
       img.addEventListener("error", () => {
         img.remove()
         card.classList.add("no-cover")
@@ -181,13 +180,36 @@ q.addEventListener("input", () => {
   countEl.textContent = `${visible().length} shown`
 })
 
-fetch("/api/library")
-  .then(response => response.json())
-  .then(data => {
-    state.bookmarks = data.bookmarks || []
-    state.syncAfter = data.sync_after || ""
-    render()
-  })
-  .catch(() => {
-    statsEl.textContent = "Could not load the local library."
-  })
+const syncButton = document.querySelector("#sync-button")
+const syncStatus = document.querySelector("#sync-status")
+
+syncButton.addEventListener("click", () => {
+  syncButton.disabled = true
+  syncStatus.textContent = "Asking the sync server on this Mac…"
+  fetch("http://127.0.0.1:4351/sync", { method: "POST" })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.ok) throw new Error(data.error || "Sync failed")
+      const added = data.downloaded && data.downloaded.added
+      syncStatus.textContent = `Sync finished. ${added} new bookmark${added === 1 ? "" : "s"}. Reload this file to see them.`
+    })
+    .catch(() => {
+      syncStatus.textContent = "The sync server is not running. Start it with the commands above, then click again."
+    })
+    .finally(() => {
+      syncButton.disabled = false
+    })
+})
+
+const library = window.LIBRARY
+if (!library || !Array.isArray(library.bookmarks)) {
+  statsEl.textContent = "The local bookmark file is missing."
+  cutoffEl.textContent = "In Terminal, run python3 build_offline.py from raindrop-website-app, then reload this file."
+} else {
+  state.bookmarks = library.bookmarks
+  state.syncAfter = library.syncAfter || ""
+  render()
+  if (library.heroes != null) {
+    statsEl.textContent = `${statsEl.textContent} · ${library.heroes} hero images saved on this Mac`
+  }
+}

@@ -30,7 +30,9 @@ Wait until it prints a line with `added` and the prompt comes back. You do not p
 
 It only keeps bookmarks saved at least one second after the newest bookmark in the export. Raindrop's date search uses a calendar day, so the script asks for that day and then drops anything that is not actually newer.
 
-If the library is already on, reload http://127.0.0.1:4351. If it is off, start it from `../raindrop-website-app` with `python3 server.py`.
+This command does not download images. After it, run `python3 build_offline.py` in `../raindrop-website-app`, then reload `static/index.html`.
+
+The Sync button on that page does both steps, but only after you start `python3 server.py` in `../raindrop-website-app`. That server is off until you start it.
 
 # Overview
 

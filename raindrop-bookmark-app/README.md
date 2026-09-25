@@ -16,61 +16,39 @@ Each of those folders has its own README. Use that README when you are working i
 
 ## Ports
 
-The modified website uses port 4350. The library uses port 4351. Both are inside the Connect block `4350-4359`.
+Browsing uses no port. The optional sync server uses port 4351 and stays off until you start it. That port is inside the Connect block `4350-4359`.
 
-## Start the modified website
+## Open the bookmark page
 
-Build it first if `dist/web/prod` is missing. The build command is in `raindrop-website-app/README.md`.
+No server.
 
-### Go to the website folder
+### Open the file
+
+```sh
+open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/static/index.html
+```
+
+If the page says the bookmark file is missing, build it first.
+
+### Build the page and download images
 
 ```sh
 cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
+python3 build_offline.py
 ```
 
-### Turn the website on
+## Start the sync server
 
-```sh
-npm start
-```
+Only when you want the Sync button to work. It uses port 4351.
 
-Open http://127.0.0.1:4350
-
-## Stop the modified website
-
-### Stop it while the terminal is open
-
-Click that terminal. Press Control and C together.
-
-### Stop it if the terminal is gone
-
-```sh
-lsof -nP -iTCP:4350 -sTCP:LISTEN
-```
-
-The second column is the PID. Replace `PID` below with that number.
-
-```sh
-kill PID
-```
-
-## Start the library
-
-### Go to the website folder
+### Turn it on
 
 ```sh
 cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
-```
-
-### Turn the library on
-
-```sh
 python3 server.py
 ```
 
-Open http://127.0.0.1:4351
-
-## Stop the library
+## Stop the sync server
 
 ### Stop it while the terminal is open
 
