@@ -1,4 +1,7 @@
-"""Local bookmark library. Serves http://127.0.0.1:8787"""
+"""Local bookmark library. Serves http://127.0.0.1:4350
+
+Port 4350 is the Connect block (4350-4359). Do not bind outside that range.
+"""
 
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -11,7 +14,7 @@ from import_html import import_export
 ROOT = Path(__file__).resolve().parent
 STATIC = ROOT / "static"
 HOST = "127.0.0.1"
-PORT = 8787
+PORT = 4350
 
 
 def row_to_item(row):

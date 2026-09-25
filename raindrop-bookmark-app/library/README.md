@@ -1,24 +1,15 @@
 # Connect library
 
-A local copy of Raindrop bookmarks. The official Raindrop apps are unchanged. This app reads a database on this machine.
-
-## Run
+The bookmark web app. What it does, how to build the extension, and how to start and stop everything is in the repo README: [../../README.md](../../README.md).
 
 ```sh
-cd raindrop-bookmark-app/library
 python3 server.py
 ```
 
-Open http://127.0.0.1:8787
+Open http://127.0.0.1:4350. Stop it with Ctrl+C in this terminal.
 
-The first launch imports `../raindrop-manual-exports/raindrop-bookmark-export-26Sep26.html` into `data/bookmarks.sqlite`. That file and the database are not committed, because the GitHub repo is public.
+```sh
+python3 sync_raindrop.py
+```
 
-## API update
-
-When you want bookmarks saved after the newest item in that export:
-
-1. Create an app at https://app.raindrop.io/settings/integrations and copy its test token.
-2. Save it as `RAINDROP_TOKEN` in `library/.env` (see `.env.example`). Do not commit `.env`.
-3. Run `python3 sync_raindrop.py`.
-
-The sync asks Raindrop for raindrops with `created` after the cutoff stored during import, and skips anything at or before that time.
+Sync reads `RAINDROP_TOKEN` from `.env` and exits when it finishes. It does not listen on a port.
