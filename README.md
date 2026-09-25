@@ -1,38 +1,36 @@
 # Connect
 
-This folder runs Raindrop's own website on this Mac, and it has a changed Chrome extension that can save a page without opening a window.
+`raindrop-website-app` is the modified Raindrop clone and the library code. Both live in that one folder. Nothing for that code lives outside it, except the database, which is in `raindrop-website-app-data`.
 
-The Raindrop app from the Mac App Store and the Raindrop extension from the Chrome Web Store stay installed. They still talk to raindrop.io. This project does not replace them.
+The Raindrop app from the Mac App Store and the Raindrop extension from the Chrome Web Store stay installed. This project does not replace them.
 
-The public copy of the code is https://github.com/johnsicoli/connect. Your bookmarks are not in that public copy. The website shows the bookmarks in your Raindrop account after you sign in.
+The public copy of the code is https://github.com/johnsicoli/connect. Your bookmarks and your API token are not in that public copy.
 
 ## The folders
 
-Open `raindrop-bookmark-app`. These are the folders that belong there.
+Open `raindrop-bookmark-app`.
 
 | Folder | What is inside |
 | --- | --- |
-| `raindrop-website-app` | Raindrop's website code. This is the program you start. |
-| `raindrop-website-app-data` | Kept for files that belong to the website but are not the program. The running website stores its signed-in copy in the browser, not in this folder. |
-| `raindrop-api` | Raindrop's written notes about their API. There is nothing to start here. |
+| `raindrop-website-app` | The modified Raindrop clone (`src/`, `connect-server.js`) and the library (`server.py`, `db.py`, `import_html.py`, `static/`). |
+| `raindrop-website-app-data` | The library database, `bookmarks.sqlite`. No program code. |
+| `raindrop-api` | The program that downloads new bookmarks, and Raindrop's API notes. |
 | `raindrop-chrome-extension` | The changed Chrome extension. |
-| `raindrop-manual-exports` | The HTML file you exported from Raindrop on 26 Sep 2026. There is nothing to start here. |
+| `raindrop-manual-exports` | The HTML file you exported from Raindrop on 26 Sep 2026. |
 
-There is no `library` folder. There is no `raindrop-desktop-app` folder. There is no separate Python website.
+There is no `library` folder. There is no `raindrop-desktop-app` folder.
 
 ## The port
-
-The website uses port **4350** on this Mac only (`127.0.0.1`). Nothing else in this project listens on a port.
 
 Add this row to the ports documentation:
 
 | Project / service | Default | Reserved range | Purpose | Owner / notes |
 | --- | ---: | --- | --- | --- |
-| Connect | `4350` | `4350-4359` | Local bookmark library. Later saved-post tools in this repo use the next free port in this block. | Binds `127.0.0.1:4350` only. Do not bind outside `4350-4359`. `4360-4399` stays unallocated. |
+| Connect | `4350` | `4350-4359` | Local bookmark library. Later saved-post tools in this repo use the next free port in this block. | `4350` is the modified Raindrop website. `4351` is the library in the same folder. Do not bind outside `4350-4359`. `4360-4399` stays unallocated. |
 
-## Install the website
+## Install the modified clone
 
-You do this once, or again after the project dependencies change. You need Node.js and npm.
+You need Node.js and npm. Do this once, or again after the dependencies change.
 
 ### Go to the website folder
 
@@ -40,17 +38,17 @@ You do this once, or again after the project dependencies change. You need Node.
 cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 ```
 
-### Download the pieces the website needs
+### Download the pieces the clone needs
 
 ```sh
 npm ci
 ```
 
-Wait until the prompt comes back. This creates a `node_modules` folder. That folder stays on this Mac and is not in git.
+Wait until the prompt comes back. This creates `node_modules`. That folder stays on this Mac and is not in git.
 
-## Build the website
+## Build the modified clone
 
-Do this once before the first start, and again after the website code changes.
+Do this before the first start, and again after the clone code changes.
 
 ### Go to the website folder
 
@@ -64,11 +62,11 @@ cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 npm run build
 ```
 
-Wait until it says the build compiled. The finished files are in `dist/web/prod`. This build talks to `https://api.raindrop.io`, the same place the real Raindrop website uses.
+Wait until it says the build compiled. The files land in `dist/web/prod` inside that same folder.
 
-## Start the website
+## Start the modified clone
 
-The build must already be done. Leave the terminal open while you use the site.
+The build must already be done. Leave the terminal open. This uses port 4350.
 
 ### Go to the website folder
 
@@ -76,34 +74,25 @@ The build must already be done. Leave the terminal open while you use the site.
 cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 ```
 
-### Turn the website on
+### Turn the modified clone on
 
 ```sh
 npm start
 ```
 
-The terminal prints `Raindrop website at http://127.0.0.1:4350` and then waits. Waiting means it is on. Sign-in and bookmark requests go through this same address to raindrop.io. The address is:
+Wait until it prints `Raindrop website at http://127.0.0.1:4350`. Then it sits there. Sitting there means it is on. Sign-in goes through this address to raindrop.io.
 
-http://127.0.0.1:4350
+### Open the modified clone
 
-### Open the website
+In Chrome or Safari, go to http://127.0.0.1:4350 and sign in.
 
-Open Chrome or Safari and go to http://127.0.0.1:4350
-
-Sign in with your Raindrop account. Your bookmarks load from raindrop.io into this browser.
-
-## Stop the website
+## Stop the modified clone
 
 ### Stop it while the terminal is still open
 
-1. Click the terminal window where `npm start` is running.
-2. Press the Control key and the C key at the same time.
-
-You get a prompt back. The address stops opening. That means it is off.
+Click the terminal where `npm start` is running. Press Control and C together.
 
 ### Stop it if you already closed the terminal
-
-This prints the process that is using port 4350.
 
 ```sh
 lsof -nP -iTCP:4350 -sTCP:LISTEN
@@ -115,17 +104,83 @@ If a line appears, the number in the second column is the PID. Then run this, wi
 kill PID
 ```
 
-### Check that it is really stopped
+### Check that the modified clone is off
 
 ```sh
 lsof -nP -iTCP:4350 -sTCP:LISTEN
 ```
 
-No lines means it is stopped. A line means it is still on. Run `kill` again with the PID from that line.
+No lines means it is stopped.
+
+## Start the library
+
+The library is the other program in `raindrop-website-app`. It shows the local database. It uses port 4351. Leave the terminal open.
+
+### Go to the website folder
+
+```sh
+cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
+```
+
+### Turn the library on
+
+```sh
+python3 server.py
+```
+
+Wait until it prints `Connect library at http://127.0.0.1:4351`. The first time the database is empty, this reads the HTML export.
+
+### Open the library
+
+In Chrome or Safari, go to http://127.0.0.1:4351
+
+## Stop the library
+
+### Stop it while the terminal is still open
+
+Click the terminal where `python3 server.py` is running. Press Control and C together.
+
+### Stop it if you already closed the terminal
+
+```sh
+lsof -nP -iTCP:4351 -sTCP:LISTEN
+```
+
+If a line appears, the number in the second column is the PID. Then run this, with that number instead of `PID`:
+
+```sh
+kill PID
+```
+
+### Check that the library is off
+
+```sh
+lsof -nP -iTCP:4351 -sTCP:LISTEN
+```
+
+No lines means it is stopped.
+
+## Download new bookmarks from Raindrop
+
+This is not a website. It runs, writes into `raindrop-website-app-data`, and then it is finished. It does not use a port.
+
+The token file must already exist at `raindrop-bookmark-app/raindrop-api/.env` with one line, `RAINDROP_TOKEN=...`. That file is not in git. If it is missing, copy `.env.example` to `.env` in that same folder and paste the test token from https://app.raindrop.io/settings/integrations.
+
+### Go to the API folder
+
+```sh
+cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-api
+```
+
+### Download the new bookmarks
+
+```sh
+python3 sync_raindrop.py
+```
+
+When it finishes, the terminal prints how many bookmarks were added. Then you get a prompt again. That means it stopped by itself. Reload http://127.0.0.1:4351 if the library is on.
 
 ## Build the Chrome extension
-
-Do this when you want a new copy of **Raindrop.io (local)** to load into Chrome.
 
 ### Go to the extension folder
 
@@ -151,7 +206,7 @@ Wait until it says the build compiled. Chrome loads this folder:
 
 `/Users/john/dev/connect/raindrop-bookmark-app/raindrop-chrome-extension/dist/chrome/prod`
 
-This build talks to `https://api.raindrop.io`. Do not use `npm run local:extension:chrome` for everyday use. That command looks for a Raindrop API on your Mac, and this project does not run one.
+This build talks to `https://api.raindrop.io`.
 
 ## Install the extension into Chrome
 
@@ -160,7 +215,7 @@ This build talks to `https://api.raindrop.io`. Do not use `npm run local:extensi
 3. Turn on **Developer mode**.
 4. Click **Load unpacked**.
 5. Choose `dist/chrome/prod` from the path above.
-6. Open **Raindrop.io (local)** and sign in. It is a different install from the store extension. Saves still go to your Raindrop account.
+6. Open **Raindrop.io (local)** and sign in.
 7. In its settings, under Clipper, turn on **Invisible save**.
 
 Clicking that icon then saves the page without opening a window. A check mark means it saved. An exclamation mark means it did not. Right-click the icon and choose Settings when you want the window.
@@ -180,11 +235,3 @@ Then on `chrome://extensions`, click **Reload** on the **Raindrop.io (local)** c
 3. Switch it off, or click Remove.
 
 The store extension is a different card. Leave that one as it is. The extension has no terminal server to stop.
-
-## What you do not start
-
-`raindrop-api` is notes. There is no command to run there.
-
-`raindrop-manual-exports` is the HTML file from 26 Sep 2026. There is no command to run there.
-
-`npm run local` inside the website folder is Raindrop's development mode. It also uses port 4350, and it looks for a private API at `http://localhost:3000`. This project does not run that API. Use `npm run build` and then `npm start` instead.
