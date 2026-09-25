@@ -1,12 +1,8 @@
-# Modified Raindrop clone and library
+# Raindrop website
 
-This folder holds two programs for the Raindrop source in Connect.
+This folder is one website: Raindrop's interface, with your bookmarks and hero images saved on this Mac. Open `dist/web/prod/index.html`. It does not need a web server. Add and sort by date are in that interface.
 
-The offline Raindrop website is `dist/web/prod/index.html`. Open that file in a browser. It is Raindrop's own interface, with your bookmarks and hero images saved on this Mac. It does not need a web server. Add and sort by date are in that interface.
-
-The modified Raindrop website clone is `src/`, `package.json`, and `connect-server.js`. You do not need it to browse the saved bookmarks.
-
-The database is in `../raindrop-website-app-data`. Saved images are in `static/media/`. The page data is `static/bookmarks.js`. Images and `bookmarks.js` stay on this Mac and are not in git.
+`src/` is that website's code. `static/bookmarks.js` and `static/media/` are the saved bookmark data and images. `npm run build` copies them into `dist/web/prod/`. The database is in `../raindrop-website-app-data`. The saved files stay on this Mac and are not in git.
 
 The full account of Connect and of Raindrop is in the root [README](../../README.md).
 
