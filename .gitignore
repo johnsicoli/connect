@@ -1,0 +1,13 @@
+.DS_Store
+.env
+**/.env
+
+# Local bookmark data. The GitHub repo is public, so the export and the
+# database stay on this machine.
+raindrop-bookmark-app/raindrop-manual-exports/*.html
+raindrop-bookmark-app/library/data/*
+!raindrop-bookmark-app/library/data/.gitkeep
+
+# Unmodified upstream checkouts, kept locally for reference.
+raindrop-bookmark-app/raindrop-desktop-app/
+raindrop-bookmark-app/raindrop-api/

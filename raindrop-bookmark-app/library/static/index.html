@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connect · Bookmarks</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <p class="eyebrow">Connect</p>
+    <h1>Bookmarks</h1>
+  </div>
+  <form class="search" role="search">
+    <label class="sr" for="q">Search bookmarks</label>
+    <input id="q" type="search" placeholder="Search title, link, tag, or note" autocomplete="off">
+  </form>
+</header>
+<div class="layout">
+  <aside>
+    <p id="stats" class="stats">Loading…</p>
+    <p id="cutoff" class="cutoff"></p>
+    <h2>Tags</h2>
+    <div id="tags" class="tags"></div>
+  </aside>
+  <main>
+    <p id="result-count" class="result-count"></p>
+    <ol id="list" class="list"></ol>
+    <p id="empty" class="empty" hidden>Nothing matches.</p>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>
