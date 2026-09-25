@@ -1,8 +1,10 @@
-# Connect: Raindrop.io (local)
+# Raindrop Chrome extension
 
-This folder is the Chrome extension for the Connect project. It is Raindrop's extension source plus an Invisible save setting. The built name is **Raindrop.io (local)**. A production build talks to `https://api.raindrop.io`.
+This folder is the Raindrop Chrome extension inside Connect. Connect is the application for connecting to websites and sources. Raindrop is one source. The full account is in the root [README](../../README.md).
 
-The rest of this file is Raindrop's original build notes.
+The extension is Raindrop's source plus an Invisible save setting. The built name is **Raindrop.io (local)**. A production build talks to `https://api.raindrop.io`. The store extension stays installed and is a different card in Chrome.
+
+The rest of this file, after these steps, is Raindrop's original build notes.
 
 ## Install the pieces the build needs
 

@@ -6,7 +6,9 @@ The modified clone is Raindrop's website, changed so it runs on this Mac. Its fi
 
 The library is the local bookmark viewer. Its files are `server.py`, `db.py`, `import_html.py`, and `static/`. It opens at http://127.0.0.1:4351. The database is not in this folder. It is in `../raindrop-website-app-data`.
 
-Raindrop's original short build list is in `UPSTREAM-README.md`. The whole project is explained in [../../README.md](../../README.md).
+This folder is the Raindrop piece of Connect. Connect is the application for connecting to websites and sources. The full account of Connect and of Raindrop is in the root [README](../../README.md).
+
+Raindrop's original short build list is in `UPSTREAM-README.md`.
 
 ## Install the modified clone
 

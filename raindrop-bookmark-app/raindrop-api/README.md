@@ -4,9 +4,35 @@ description: >-
   bookmarks on Raindrop.io
 ---
 
-# Overview
+# This folder in Connect
 
-The program that downloads new bookmarks into the local library database is [HOW-TO-SYNC.md](HOW-TO-SYNC.md). Run it from this folder with `python3 sync_raindrop.py`. It is not a website.
+This folder does two jobs. `sync_raindrop.py` downloads bookmarks saved after the 26 Sep 2026 export and writes them into `../raindrop-website-app-data/bookmarks.sqlite`. The rest of the files are Raindrop's own API notes. Those notes start at [Overview](#overview) below.
+
+The download is not a website and it does not use a port. When the command finishes, it has stopped.
+
+The token is the file `.env` in this folder. One line: `RAINDROP_TOKEN=...`. Git does not store `.env`. If `.env` is missing, copy `.env.example` to `.env` and paste the test token from https://app.raindrop.io/settings/integrations.
+
+## Download new bookmarks
+
+### Go to this folder
+
+```sh
+cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-api
+```
+
+### Run the download
+
+```sh
+python3 sync_raindrop.py
+```
+
+Wait until it prints a line with `added` and the prompt comes back. You do not press Control-C. `added` is how many new bookmarks it stored. Running it again does not duplicate bookmarks it already stored.
+
+It only keeps bookmarks saved at least one second after the newest bookmark in the export. Raindrop's date search uses a calendar day, so the script asks for that day and then drops anything that is not actually newer.
+
+If the library is already on, reload http://127.0.0.1:4351. If it is off, start it from `../raindrop-website-app` with `python3 server.py`.
+
+# Overview
 
 This is the official documentation for Raindrop.io API. A reference to the functionality our public API provides with detailed description of each API endpoint, parameters, and examples.
 
