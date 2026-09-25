@@ -23,7 +23,7 @@ module.exports = ({ vendor, production=false }, l) => {
 			version_name:	version,
 		} : {}),
 
-		name:			'Raindrop.io'+(!production?' (Dev)':''),
+		name:			'Raindrop.io'+(!production?' (Dev)':' (local)'),
 		description:	'__MSG_appDesc__',
 		homepage_url:	'https://app.raindrop.io',
 		author:			'Mussabekov Rustem',
