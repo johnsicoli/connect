@@ -3,6 +3,7 @@ const state = {
   query: "",
   tag: "",
   syncAfter: "",
+  view: "grid",
 }
 
 const q = document.querySelector("#q")
@@ -76,10 +77,59 @@ function renderTags() {
   }
 }
 
+function openDetail(item) {
+  const dialog = document.querySelector("#detail")
+  const hero = document.querySelector("#detail-hero")
+  document.querySelector("#detail-title").textContent = item.title
+  document.querySelector("#detail-meta").textContent = [item.domain, formatDate(item.created_at), item.collection].filter(Boolean).join(" · ")
+  document.querySelector("#detail-excerpt").textContent = item.excerpt || item.note || ""
+  const tags = document.querySelector("#detail-tags")
+  tags.replaceChildren()
+  for (const tag of item.tags) {
+    const pill = document.createElement("span")
+    pill.className = "pill"
+    pill.textContent = tag
+    tags.append(pill)
+  }
+  const highlights = document.querySelector("#detail-highlights")
+  highlights.replaceChildren()
+  for (const text of item.highlights) {
+    const p = document.createElement("p")
+    p.className = "highlight"
+    p.textContent = text
+    highlights.append(p)
+  }
+  if (item.hero) {
+    hero.hidden = false
+    hero.src = item.hero
+  } else {
+    hero.hidden = true
+    hero.removeAttribute("src")
+  }
+  const href = safeUrl(item.url)
+  let open = dialog.querySelector(".open-link")
+  if (!open) {
+    open = document.createElement("a")
+    open.className = "open-link"
+    open.target = "_blank"
+    open.rel = "noreferrer"
+    dialog.append(open)
+  }
+  if (href) {
+    open.hidden = false
+    open.href = href
+    open.textContent = "Open original page"
+  } else {
+    open.hidden = true
+  }
+  dialog.showModal()
+}
+
 function renderList() {
   const items = visible()
   countEl.textContent = `${items.length} shown`
   emptyEl.hidden = items.length > 0
+  list.classList.toggle("grid", state.view === "grid")
   list.replaceChildren()
   for (const item of items) {
     const card = document.createElement("li")
@@ -160,9 +210,26 @@ function renderList() {
     }
 
     card.append(body)
+    card.addEventListener("click", event => {
+      if (event.target.closest("a, summary, details")) return
+      openDetail(item)
+    })
     list.append(card)
   }
 }
+
+document.querySelector("#view-grid").addEventListener("click", () => {
+  state.view = "grid"
+  document.querySelector("#view-grid").setAttribute("aria-pressed", "true")
+  document.querySelector("#view-list").setAttribute("aria-pressed", "false")
+  renderList()
+})
+document.querySelector("#view-list").addEventListener("click", () => {
+  state.view = "list"
+  document.querySelector("#view-list").setAttribute("aria-pressed", "true")
+  document.querySelector("#view-grid").setAttribute("aria-pressed", "false")
+  renderList()
+})
 
 function render() {
   const tagged = state.bookmarks.filter(item => item.tags.length).length

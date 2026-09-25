@@ -13,10 +13,16 @@
     <h1>Bookmarks</h1>
     <p class="offline">This page is a file on this Mac. Browsing does not use a server.</p>
   </div>
-  <form class="search" role="search">
-    <label class="sr" for="q">Search bookmarks</label>
-    <input id="q" type="search" placeholder="Search title, link, tag, or note" autocomplete="off">
-  </form>
+  <div class="tools">
+    <form class="search" role="search">
+      <label class="sr" for="q">Search bookmarks</label>
+      <input id="q" type="search" placeholder="Search title, link, tag, or note" autocomplete="off">
+    </form>
+    <div class="views" role="group" aria-label="Layout">
+      <button type="button" id="view-grid" aria-pressed="true">Cards</button>
+      <button type="button" id="view-list" aria-pressed="false">List</button>
+    </div>
+  </div>
 </header>
 <section class="sync" id="sync">
   <button type="button" id="sync-button">Sync newest bookmarks</button>
@@ -41,6 +47,17 @@ python3 server.py</pre>
     <p id="empty" class="empty" hidden>Nothing matches.</p>
   </main>
 </div>
+<dialog id="detail">
+  <form method="dialog">
+    <button class="close" value="cancel">Close</button>
+  </form>
+  <img id="detail-hero" alt="" hidden>
+  <h2 id="detail-title"></h2>
+  <p id="detail-meta" class="meta"></p>
+  <p id="detail-excerpt" class="excerpt"></p>
+  <div id="detail-tags" class="row-tags"></div>
+  <div id="detail-highlights"></div>
+</dialog>
 <script src="bookmarks.js"></script>
 <script src="app.js"></script>
 </body>
