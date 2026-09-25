@@ -1,147 +1,176 @@
 # Connect
 
-A local copy of bookmarks saved in Raindrop, plus a modified Chrome extension that can save a page without opening a window. The official Raindrop Mac app and the Chrome Web Store extension stay installed and keep syncing with raindrop.io. This repo does not replace them.
+This folder is a copy of your Raindrop bookmarks that lives on this Mac, plus a changed Chrome extension that can save a page without opening a window.
 
-The GitHub repo is public: https://github.com/johnsicoli/connect. The bookmark export and the local database are not in git.
+The Raindrop app from the Mac App Store and the Raindrop extension from the Chrome Web Store stay installed. They still talk to raindrop.io. This project does not replace them.
 
-## Port
+The public copy of the code is https://github.com/johnsicoli/connect. Your bookmarks and your API token are not in that public copy.
 
-This project uses **4350-4359**. The library binds `127.0.0.1:4350` only. Nothing else in this repo listens on a port. Later tools in this repo (YouTube, Reddit, X) take the next free port inside this block.
+## The folders
 
-Add this row to the shared port table before starting the library:
+Open `raindrop-bookmark-app`. These are the only folders that belong there.
+
+| Folder | What is inside |
+| --- | --- |
+| `raindrop-website-app` | The website you open in a browser to look at the local bookmarks. The code for that website stays in this folder. |
+| `raindrop-website-app-data` | The database file that holds the bookmarks. No program code belongs here. |
+| `raindrop-api` | The program that asks Raindrop for new bookmarks, and Raindrop's API notes. |
+| `raindrop-chrome-extension` | The changed Chrome extension. |
+| `raindrop-manual-exports` | The HTML file you exported from Raindrop on 26 Sep 2026. |
+
+There is no `library` folder. There is no `raindrop-desktop-app` folder.
+
+## The port
+
+The website uses port **4350**. Nothing else in this project listens on a port.
+
+Add this row to the ports documentation:
 
 | Project / service | Default | Reserved range | Purpose | Owner / notes |
 | --- | ---: | --- | --- | --- |
 | Connect | `4350` | `4350-4359` | Local bookmark library. Later saved-post tools in this repo use the next free port in this block. | Binds `127.0.0.1:4350` only. Do not bind outside `4350-4359`. `4360-4399` stays unallocated. |
 
-## What each part does
+## Start the bookmark website
 
-| Path | What it is |
-| --- | --- |
-| `raindrop-bookmark-app/library` | Our web app. Search, tags, and highlights for a SQLite copy of the bookmarks. |
-| `raindrop-bookmark-app/raindrop-chrome-extension` | Raindrop's extension source (MIT, upstream `raindropio/app` at the commit in `UPSTREAM.txt`) plus **Invisible save**. |
-| `raindrop-bookmark-app/raindrop-manual-exports` | HTML exports. Present on this machine, not committed. |
-| `raindrop-bookmark-app/raindrop-desktop-app` | Local checkout of the same upstream repo, for reading. Not committed, not installed, not run. The Mac app you already use is the official one. |
-| `raindrop-bookmark-app/raindrop-api` | Local checkout of the Raindrop API docs. Not committed. |
+This turns the website on. Leave the terminal window open while you use it.
 
-The library was seeded from `raindrop-bookmark-export-26Sep26.html` (26 Sep 2026). That file had 566 bookmarks, all in Unsorted. One URL was saved twice, so the database started at 565. A later API sync added two bookmarks saved after `2026-09-25T04:30:06Z`. The database now has 567 bookmarks.
-
-Invisible save is a Clipper setting in the local extension. With it on, the toolbar click saves the current page in the background. A check mark on the icon means it saved. An exclamation mark means it did not. It uses the same default collection as Clipper and does not create a second copy of a URL that is already saved. Right-click the icon and choose Settings to open the window again. The store extension is unchanged and still opens its window.
-
-## Requirements
-
-- Python 3, from the system. The library uses the standard library only.
-- Node.js and npm, for the extension. The upstream pin is Node 18.16.0 (`.node-version`). `npm ci` and the Chrome production build also completed on Node 22.
-- Chrome, to load the unpacked extension.
-- A Raindrop account. API sync uses a test token from https://app.raindrop.io/settings/integrations.
-
-## Bookmark library
-
-### Install
-
-Nothing to install. From the repo root:
+### Go to the website folder
 
 ```sh
-cd raindrop-bookmark-app/library
+cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 ```
 
-The first time `server.py` runs, if `data/bookmarks.sqlite` is missing or empty and the HTML export is present, it imports:
+You are now in the folder that holds the website code.
 
-`../raindrop-manual-exports/raindrop-bookmark-export-26Sep26.html`
-
-That export and `data/bookmarks.sqlite` stay on this machine. Both are gitignored.
-
-### Start
+### Turn the website on
 
 ```sh
-cd raindrop-bookmark-app/library
 python3 server.py
 ```
 
-Open http://127.0.0.1:4350
+The terminal prints `Connect library at http://127.0.0.1:4350` and then waits. Waiting means it is on. The first time the database is empty, this also reads the HTML export and fills the database.
 
-The process serves only that address. Leave the terminal open while you use it.
+### Open the website
 
-### Stop
+Open Chrome or Safari and go to:
 
-In the terminal where it is running, press Ctrl+C.
+http://127.0.0.1:4350
 
-If that terminal is gone:
+You should see the title Bookmarks and a count of bookmarks.
+
+## Stop the bookmark website
+
+### Stop it while the terminal is still open
+
+1. Click the terminal window where `python3 server.py` is running.
+2. Press the Control key and the C key at the same time.
+
+The terminal gives you a new prompt. The website address stops working. That is what stop looks like.
+
+### Stop it if you already closed the terminal
+
+Paste this. It prints the process number of whatever is using port 4350.
 
 ```sh
 lsof -nP -iTCP:4350 -sTCP:LISTEN
-kill <PID>
 ```
 
-Confirm nothing is still listening:
+If a line appears, the last number in the second column is the PID. Then paste this, using that number instead of `PID`:
+
+```sh
+kill PID
+```
+
+### Check that it is really stopped
 
 ```sh
 lsof -nP -iTCP:4350 -sTCP:LISTEN
 ```
 
-### API sync
+No lines means it is stopped. A line means it is still on. Run `kill` again with the PID from that line.
 
-Sync is a one-shot command, not a server. It does not listen on a port. Run it when you want bookmarks created after the cutoff stored in the database (`sync_after`, set from the newest item in the export).
+## Download new bookmarks from Raindrop
 
-The token lives in `raindrop-bookmark-app/library/.env`:
+This is not a website. It runs, adds any new bookmarks, and then it is finished. It does not use a port.
+
+The token file must already exist at `raindrop-bookmark-app/raindrop-api/.env` with one line, `RAINDROP_TOKEN=...`. That file is already on this Mac. It is not in git. If it is missing, copy `.env.example` to `.env` in that same folder and paste the test token from https://app.raindrop.io/settings/integrations.
+
+### Go to the API folder
 
 ```sh
-RAINDROP_TOKEN=...
+cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-api
 ```
 
-Copy `.env.example` if the file is missing. `.env` is gitignored. Do not commit it.
+### Download the new bookmarks
 
 ```sh
-cd raindrop-bookmark-app/library
 python3 sync_raindrop.py
 ```
 
-Raindrop's `created:` search accepts a calendar day, not a full timestamp. The script asks for that day and then keeps only raindrops at least one second newer than the cutoff, so the bookmark that was already newest in the export is not imported again. Re-running the script updates matches already stored from the API and skips the rest.
+When it finishes, the terminal prints how many bookmarks were added. Then you get a prompt again. That means it stopped by itself. Open the website again (start it first if it is off) and the new bookmarks are at the top.
 
-There is no schedule. The next sync happens when you run that command again.
+It only keeps bookmarks saved at least one second after the newest bookmark in the 26 Sep export. Running it again does not make a second copy of those bookmarks.
 
-## Chrome extension
+## Build the Chrome extension
 
-### Build
+Do this when you want a new copy of **Raindrop.io (local)** to load into Chrome. You need Node.js and npm.
+
+### Go to the extension folder
 
 ```sh
-cd raindrop-bookmark-app/raindrop-chrome-extension
+cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-chrome-extension
+```
+
+### Install the pieces the build needs
+
+```sh
 npm ci
+```
+
+Wait until it finishes and you get a prompt. This creates `node_modules`. That folder stays on this Mac and is not in git. You only need to do this again after the project dependencies change.
+
+### Build the extension
+
+```sh
 npm run build:extension:chrome
 ```
 
-`npm ci` installs dependencies and runs `patch-package`. The production build writes an unpacked extension to `dist/chrome/prod` and a zip to `chrome-prod.zip` in that project directory. `node_modules/` and `dist/` are gitignored.
+Wait until it says the build compiled. The folder Chrome loads is:
 
-The production build talks to `https://api.raindrop.io`. The dev build (`npm run local:extension:chrome`) talks to `http://localhost:3000` and is not the one to load.
+`/Users/john/dev/connect/raindrop-bookmark-app/raindrop-chrome-extension/dist/chrome/prod`
 
-The built extension name is **Raindrop.io (local)** so it can sit beside the store extension.
+This build talks to `https://api.raindrop.io`. Do not load a dev build. The dev command talks to `localhost:3000`, which is not this project.
 
-### Install in Chrome
+## Install the extension into Chrome
+
+1. Open Chrome.
+2. Go to `chrome://extensions`.
+3. Turn on **Developer mode**.
+4. Click **Load unpacked**.
+5. Choose the folder `dist/chrome/prod` from the path above.
+6. The new card is named **Raindrop.io (local)**. Click it once and sign in. It is a different install from the store extension. Saves still go to your Raindrop account.
+7. Open its settings. Under Clipper, turn on **Invisible save**.
+
+After that, clicking the local icon saves the page without opening a window. A check mark means it saved. An exclamation mark means it did not. Right-click that icon and choose Settings when you want the window.
+
+### Reload the extension after a new build
+
+```sh
+npm run build:extension:chrome
+```
+
+Then on `chrome://extensions`, click **Reload** on the **Raindrop.io (local)** card.
+
+## Turn the Chrome extension off
 
 1. Open `chrome://extensions`.
-2. Turn on Developer mode.
-3. Click **Load unpacked** and choose `raindrop-bookmark-app/raindrop-chrome-extension/dist/chrome/prod`.
-4. Open the local extension once and sign in. It is a separate install from the store extension. Saves still go to the Raindrop account.
-5. In its settings, under Clipper, turn on **Invisible save**.
+2. Find **Raindrop.io (local)**.
+3. Switch it off, or click Remove.
 
-After a code change, run `npm run build:extension:chrome` again and click **Reload** on the extension card.
+The store extension is a different card. Leave that one as it is. There is no server to stop for the extension.
 
-### Stop
+## What you do not start
 
-The extension has no background server of ours. To stop using it, open `chrome://extensions` and switch off **Raindrop.io (local)**, or click Remove. The store extension is a different install. Leave it on.
+Raindrop's original website source is also inside `raindrop-website-app`, in `src/` and `package.json`. That is their code, kept so the folder matches what we downloaded. Starting it is `npm run local` from that folder, and it expects Raindrop's own servers. This project does not use that command to show your local bookmarks. Use `python3 server.py` instead.
 
-## What is not running
-
-- The official Raindrop Mac app. Keep using the copy you already installed.
-- `raindrop-desktop-app`. It is a source checkout only. `npm run build:electron` in the upstream repo builds a web bundle. It does not install a Mac app, and this project does not run it.
-- `raindrop-api`. Docs only.
-- Sync. It exits when the pull finishes.
-
-## Git
-
-From the repo root, `git status` should be clean apart from ignored data. Do not commit:
-
-- `raindrop-bookmark-app/library/.env`
-- `raindrop-bookmark-app/library/data/*.sqlite`
-- `raindrop-bookmark-app/raindrop-manual-exports/*.html`
-- `node_modules/` or `dist/`
+`raindrop-manual-exports` is only the HTML file. There is nothing to start.

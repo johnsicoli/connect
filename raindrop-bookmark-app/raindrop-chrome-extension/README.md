@@ -1,3 +1,60 @@
+# Connect: Raindrop.io (local)
+
+This folder is the Chrome extension for the Connect project. It is Raindrop's extension source plus an Invisible save setting. The built name is **Raindrop.io (local)**. A production build talks to `https://api.raindrop.io`.
+
+The rest of this file is Raindrop's original build notes.
+
+## Install the pieces the build needs
+
+### Go to this folder
+
+```sh
+cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-chrome-extension
+```
+
+### Download the build tools into node_modules
+
+```sh
+npm ci
+```
+
+Wait for the prompt to come back. `node_modules` stays on this Mac and is not in git.
+
+## Build the extension Chrome loads
+
+### Make the production build
+
+```sh
+npm run build:extension:chrome
+```
+
+Wait until it says the build compiled. Chrome loads this folder:
+
+`/Users/john/dev/connect/raindrop-bookmark-app/raindrop-chrome-extension/dist/chrome/prod`
+
+## Load it into Chrome
+
+1. Open `chrome://extensions`.
+2. Turn on Developer mode.
+3. Click Load unpacked.
+4. Choose the `dist/chrome/prod` folder.
+5. Open **Raindrop.io (local)** and sign in.
+6. In Clipper settings, turn on Invisible save.
+
+## Turn it off
+
+Open `chrome://extensions`, find **Raindrop.io (local)**, and switch it off or click Remove. The store extension is a different card. There is no terminal server to stop.
+
+## Reload it after you build again
+
+### Build again
+
+```sh
+npm run build:extension:chrome
+```
+
+Then click Reload on the **Raindrop.io (local)** card at `chrome://extensions`.
+
 # Raindrop.io 5.0
 Mono repo for Raindrop.io web app, browser extension and desktop app
 
