@@ -12,7 +12,7 @@ module.exports = (env={}, args={}) =>
         {
             output: {
                 path: path.resolve(__dirname, '..', 'dist', 'web', env.production?'prod':'dev'),
-                publicPath: '/'
+                publicPath: process.env.CONNECT_LOCAL == '1' ? '' : '/'
             },
 
             optimization: {

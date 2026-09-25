@@ -7,6 +7,7 @@ import {
 	API_TIMEOUT
 } from '../constants/app'
 import ApiError from './error'
+import { offlineAnswer, fakeResponse } from './offline'
 
 function* get(url, overrideOptions={}) {
 	const res = yield req(url, overrideOptions, API_RETRIES)
@@ -100,6 +101,9 @@ function* del(url, data={}, options={}) {
 }
 
 function* req(url, options={}, retries=0) {
+	if (process.env.CONNECT_LOCAL == '1' && url.indexOf('http') != 0 && url.indexOf('/') != 0)
+		return fakeResponse(offlineAnswer(url, options))
+
 	var finalURL = API_ENDPOINT_URL + url
 
 	if (url.indexOf('/') == 0)

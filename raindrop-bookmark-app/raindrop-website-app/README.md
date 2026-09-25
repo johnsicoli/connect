@@ -2,7 +2,7 @@
 
 This folder holds two programs for the Raindrop source in Connect.
 
-The library page is `static/index.html`. Open that file in a browser. It is rich JavaScript and it does not need a web server. Search, tags, notes, Open Graph text, and hero images come from files on this Mac.
+The offline Raindrop website is `dist/web/prod/index.html`. Open that file in a browser. It is Raindrop's own interface, with your bookmarks and hero images saved on this Mac. It does not need a web server. Add and sort by date are in that interface.
 
 The modified Raindrop website clone is `src/`, `package.json`, and `connect-server.js`. You do not need it to browse the saved bookmarks.
 
@@ -33,7 +33,7 @@ Wait until it prints a line with `bookmarks` and `heroes`. It stops by itself.
 ### Open the file
 
 ```sh
-open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/static/index.html
+open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/dist/web/prod/index.html
 ```
 
 No server is started. The page works while that Terminal is closed.

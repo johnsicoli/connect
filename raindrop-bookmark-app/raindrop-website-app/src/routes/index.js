@@ -13,7 +13,7 @@ import My from './my'
 import Join from './join'
 import Settings from './settings'
 
-const Router = target == 'web' ? BrowserRouter : HashRouter
+const Router = target == 'web' && process.env.CONNECT_LOCAL != '1' ? BrowserRouter : HashRouter
 
 export default function Pages() {
     return (

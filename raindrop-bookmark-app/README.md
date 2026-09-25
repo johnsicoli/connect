@@ -25,7 +25,7 @@ No server.
 ### Open the file
 
 ```sh
-open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/static/index.html
+open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/dist/web/prod/index.html
 ```
 
 If the page says the bookmark file is missing, build it first.

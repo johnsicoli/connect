@@ -104,7 +104,11 @@ cd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app
 python3 build_offline.py
 ```
 
-Wait until it prints a line with `bookmarks` and `heroes`. It can take a while. It stops by itself.
+Wait until it prints a line with `bookmarks` and `heroes`. It can take a while. It stops by itself. Then build the Raindrop screen so it includes those files:
+
+```sh
+npm run build
+```
 
 ### Open the bookmark page
 
@@ -113,7 +117,7 @@ No server. No `npm start`.
 #### Open the file
 
 ```sh
-open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/static/index.html
+open /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app/dist/web/prod/index.html
 ```
 
 Chrome or Safari opens the file from this Mac. Search, tags, notes, and the saved hero images work with the server off.
