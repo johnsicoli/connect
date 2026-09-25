@@ -1,6 +1,8 @@
 .DS_Store
 .env
 **/.env
+__pycache__/
+*.pyc
 
 # Local bookmark data. The GitHub repo is public, so the export and the
 # database stay on this machine.
