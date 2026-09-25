@@ -32,7 +32,8 @@ module.exports = ({ production, filename='[name].[contenthash]', sentry={} }, { 
 		client: {
 			overlay: true,
 		},
-		port: 2000
+		// Connect reserves 4350-4359. Do not move this outside that block.
+		port: 4350
 	},
 
 	performance: {
@@ -108,6 +109,7 @@ module.exports = ({ production, filename='[name].[contenthash]', sentry={} }, { 
 
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(production?'production':'development'),
+			'process.env.CONNECT_LOCAL': JSON.stringify(process.env.CONNECT_LOCAL || ''),
 			RAINDROP_ENVIRONMENT: JSON.stringify('browser'),
 			'process.env.SENTRY_RELEASE': JSON.stringify(production && !sentry?.disabled? process.env.SENTRY_RELEASE : undefined)
 		}),
