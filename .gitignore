@@ -9,3 +9,4 @@ __pycache__/
 raindrop-bookmark-app/raindrop-manual-exports/*.html
 raindrop-bookmark-app/raindrop-website-app-data/*
 !raindrop-bookmark-app/raindrop-website-app-data/.gitkeep
+!raindrop-bookmark-app/raindrop-website-app-data/README.md
