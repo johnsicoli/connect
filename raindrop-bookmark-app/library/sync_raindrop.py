@@ -9,7 +9,7 @@ import os
 import urllib.error
 import urllib.parse
 import urllib.request
-from pathlib import Path
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
 
 from db import ROOT, connect, get_meta, set_meta
@@ -122,6 +122,22 @@ def upsert_item(db, item):
     return "added"
 
 
+def parse_time(value):
+    if not value:
+        return None
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+def is_newer(created, cutoff):
+    created_at = parse_time(created)
+    cutoff_at = parse_time(cutoff)
+    if not created_at or not cutoff_at:
+        return False
+    # The HTML export stores whole seconds. Raindrop returns that same
+    # bookmark with milliseconds, so anything inside that second is not new.
+    return created_at >= cutoff_at + timedelta(seconds=1)
+
+
 def sync(db=None):
     token = load_token()
     if not token:
@@ -131,7 +147,8 @@ def sync(db=None):
     cutoff = get_meta(db, "sync_after", "")
     if not cutoff:
         raise RuntimeError("No sync cutoff is stored. Import the HTML export first.")
-    search = f"created:>{cutoff}"
+    # The created: search accepts a calendar day. A full timestamp matches nothing.
+    search = f"created:>{cutoff[:10]}"
     added = updated = skipped = pages = 0
     page = 0
     while True:
@@ -142,7 +159,7 @@ def sync(db=None):
             break
         for item in items:
             created = item.get("created") or ""
-            if created <= cutoff:
+            if not is_newer(created, cutoff):
                 skipped += 1
                 continue
             result = upsert_item(db, item)
