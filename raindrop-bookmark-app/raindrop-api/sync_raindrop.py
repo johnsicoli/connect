@@ -147,7 +147,7 @@ def is_newer(created, cutoff):
 def sync(db=None):
     token = load_token()
     if not token:
-        raise RuntimeError("RAINDROP_TOKEN is not set. Put it in library/.env")
+        raise RuntimeError("RAINDROP_TOKEN is not set. Put it in raindrop-api/.env")
     own = db is None
     db = db or connect()
     cutoff = get_meta(db, "sync_after", "")

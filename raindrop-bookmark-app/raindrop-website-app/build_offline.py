@@ -194,7 +194,7 @@ def write_library(db):
     return {"bookmarks": len(bookmarks), "heroes": heroes, "graphs": graphs}
 
 
-def build():
+def build(on_progress=None):
     MEDIA.mkdir(parents=True, exist_ok=True)
     db = connect()
     ensure_columns(db)
@@ -213,7 +213,10 @@ def build():
             done += 1
             if done % 25 == 0 or done == len(rows):
                 db.commit()
-                print(f"saved {done}/{len(rows)}", flush=True)
+                message = f"Saving images {done}/{len(rows)}"
+                print(message, flush=True)
+                if on_progress:
+                    on_progress(message)
     db.commit()
     summary = write_library(db)
     db.close()

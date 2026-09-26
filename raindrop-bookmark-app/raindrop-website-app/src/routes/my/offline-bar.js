@@ -21,33 +21,49 @@ function useBanner() {
 export function SyncButton() {
 	const [busy, setBusy] = useState(false)
 
-	function sync() {
+	async function sync() {
 		setBusy(true)
-		publish({ kind: 'progress', text: 'Downloading new bookmarks and images…' })
-		const controller = new AbortController()
-		const timer = setTimeout(() => controller.abort(), 4000)
-		fetch('http://127.0.0.1:4351/sync', { method: 'POST', signal: controller.signal })
-			.then(response => response.json())
-			.then(data => {
-				if (!data.ok) throw new Error(data.error || 'Sync failed')
-				const added = data.downloaded ? data.downloaded.added : 0
-				const skipped = data.downloaded ? data.downloaded.skipped : 0
-				publish({
-					kind: 'ok',
-					text: `Sync finished. ${added} new, ${skipped} already saved. Reloading…`
-				})
-				setTimeout(() => window.location.reload(), 1200)
+		publish({ kind: 'progress', text: 'Starting sync…' })
+		let started
+		try {
+			started = await (await fetch('http://127.0.0.1:4351/sync', { method: 'POST' })).json()
+		} catch (e) {
+			publish({
+				kind: 'error',
+				text: 'The sync server is off. Open Terminal, paste the two commands below, leave that window open, then click Sync again.\n\ncd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app\npython3 server.py'
 			})
-			.catch(() => {
-				publish({
-					kind: 'error',
-					text: 'The sync server is off. Open Terminal, paste the two commands below, leave that window open, then click Sync again.\n\ncd /Users/john/dev/connect/raindrop-bookmark-app/raindrop-website-app\npython3 server.py'
-				})
-			})
-			.finally(() => {
-				clearTimeout(timer)
+			setBusy(false)
+			return
+		}
+		if (!started.ok) {
+			publish({ kind: 'error', text: started.error || 'Sync failed.' })
+			setBusy(false)
+			return
+		}
+		while (true) {
+			await new Promise(resolve => setTimeout(resolve, 800))
+			let status
+			try {
+				status = await (await fetch('http://127.0.0.1:4351/status')).json()
+			} catch (e) {
+				publish({ kind: 'error', text: 'The sync server stopped while it was working. Start it again and click Sync.' })
 				setBusy(false)
-			})
+				return
+			}
+			if (status.running) {
+				publish({ kind: 'progress', text: status.message || 'Working…' })
+				continue
+			}
+			if (status.error) {
+				publish({ kind: 'error', text: status.error })
+				setBusy(false)
+				return
+			}
+			const added = status.result && status.result.downloaded ? status.result.downloaded.added : 0
+			publish({ kind: 'ok', text: `Sync finished. ${added} new. Reloading…` })
+			setTimeout(() => window.location.reload(), 1200)
+			return
+		}
 	}
 
 	return (
