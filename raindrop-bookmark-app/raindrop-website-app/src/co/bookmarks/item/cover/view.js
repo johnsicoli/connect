@@ -84,11 +84,14 @@ export default class BookmarkItemCover extends React.PureComponent {
                 break
         }
 
+        const local = uri && !/^https?:/i.test(uri)
+        const sized = uri && (local ? uri : `${uri}?mode=${mode}&fill=solid&width=${width||''}&ar=${ar||''}&dpr=${dpr[view]||dpr.default}`)
+
         return (
             <>
-                <source
+                {!local && <source
                     srcSet={uri && `${uri}?mode=${mode}&fill=solid&format=webp&width=${width||''}&ar=${ar||''}&dpr=${dpr[view]||dpr.default}`}
-                    type='image/webp' />
+                    type='image/webp' />}
 
                 <img 
                     tabIndex='-1'
@@ -98,7 +101,7 @@ export default class BookmarkItemCover extends React.PureComponent {
                     height={height}
                     alt=' '
                     {...etc}
-                    src={uri && `${uri}?mode=${mode}&fill=solid&width=${width||''}&ar=${ar||''}&dpr=${dpr[view]||dpr.default}`}
+                    src={sized}
                     //type='image/jpeg'
                     onLoadStart={indicator ? this.onImageLoadStart : undefined}
                     onLoad={indicator ? this.onImageLoadSuccess : undefined}

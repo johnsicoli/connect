@@ -8,7 +8,6 @@ import Sidebar, { Header, Content } from '~co/screen/splitview/sidebar'
 import Collections from '~co/collections/items'
 import FiltersTags from './filters_tags'
 import Profile from './profile'
-import Upgrade from './upgrade'
 
 export default function PageMySidebar() {
     const { cId, search } = useParams()
@@ -52,8 +51,6 @@ export default function PageMySidebar() {
                     }
                 </FiltersTags>
             </Content>
-
-            <Upgrade />
         </Sidebar>
     )
 }

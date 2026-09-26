@@ -217,8 +217,19 @@ def build():
     db.commit()
     summary = write_library(db)
     db.close()
+    copy_into_dist()
     print(summary, flush=True)
     return summary
+
+
+def copy_into_dist():
+    import shutil
+    dest = ROOT / "dist" / "web" / "prod"
+    if not dest.exists() or not BOOKMARKS_JS.exists():
+        return
+    shutil.copy2(BOOKMARKS_JS, dest / "bookmarks.js")
+    if MEDIA.exists():
+        shutil.copytree(MEDIA, dest / "media", dirs_exist_ok=True)
 
 
 if __name__ == "__main__":
