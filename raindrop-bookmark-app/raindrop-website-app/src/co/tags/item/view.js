@@ -26,21 +26,21 @@ export default class TagsItemView extends React.Component {
                 {...etc}
                 className={s.item}
                 active={active}>
-                <span className={s.pill}>
-                    {showIcon ? <TagIcon /> : null}
-                    <span className={s.name}>{_id}</span>
-                    {count ? <span className={s.count}>{compact(count)}</span> : null}
-                    {isNew ? <span className={s.count}>{t.s('newTag')}</span> : null}
-                </span>
-                {etc.onContextMenu ? (
-                    <ItemActions>
-                        <Button
+                {showIcon && <TagIcon />}
+
+                <ItemTitle>{_id}</ItemTitle>
+
+                {count ? <ItemInfo>{compact(count)}</ItemInfo> : null}
+                {isNew ? <ItemInfo>{t.s('newTag')}</ItemInfo> : null}
+                <ItemActions>
+                    {etc.onContextMenu && (
+                        <Button 
                             title={t.s('more')}
                             onClick={etc.onContextMenu}>
                             <Icon name='more_horizontal' />
                         </Button>
-                    </ItemActions>
-                ) : null}
+                    )}
+                </ItemActions>
 
                 {focusable && (
                     <SuperLink 

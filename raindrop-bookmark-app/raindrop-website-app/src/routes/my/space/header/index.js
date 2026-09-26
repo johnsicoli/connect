@@ -5,9 +5,7 @@ import Search from '~co/search'
 import { useNavigate } from 'react-router-dom'
 import { target, environment } from '~target'
 
-import Add from './add'
 import Share from './share'
-import Ask from './ask'
 import { SyncButton } from '../../offline-bar'
 
 export default function PageMySpaceHeader(params) {
@@ -36,8 +34,6 @@ export default function PageMySpaceHeader(params) {
             <Space />
 
             <Share {...params} />
-            <Ask {...params} />
-            <Add {...params} />
             {process.env.CONNECT_LOCAL == '1' ? <SyncButton /> : null}
         </Header>
     )
